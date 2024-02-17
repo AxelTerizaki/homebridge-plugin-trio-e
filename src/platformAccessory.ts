@@ -33,6 +33,10 @@ export class TrioEPlatformAccessory {
       .setCharacteristic(this.platform.Characteristic.SerialNumber, 'ABCDEFGH')
 	  //Water faucet here
       .setCharacteristic(this.platform.Characteristic.ValveType, 3);
+
+    // TODO : Get State here
+    // Set interval every second to get state
+
     // get the Valve service if it exists, otherwise create a new LightBulb service
     // you can create multiple services for each accessory
     this.faucetService = this.accessory.getService(this.platform.Service.Valve) || this.accessory.addService(this.platform.Service.Valve);
