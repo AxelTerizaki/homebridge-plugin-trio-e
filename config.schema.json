@@ -5,11 +5,18 @@
   "schema": {
     "type": "object",
     "properties": {
-      "name": {
-        "title": "Name",
+      "ip": {
+        "title": "Trio E WLAN module hostname / IP address",
         "type": "string",
         "required": true,
-        "default": "Example Dynamic Platform"
+        "format": "hostname",
+		"description": "The IP address or host your Trio E WLAN module responds to. Setup your DHCP server to give it a fixed IP!"
+      },
+	  "secure": {
+        "title": "HTTPS connection",
+        "type": "boolean",
+        "default": false,
+		"description": "Use an HTTPS connection to talk to the WLAN module."
       }
     }
   }
