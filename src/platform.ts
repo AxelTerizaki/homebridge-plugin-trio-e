@@ -68,7 +68,7 @@ export class TrioEPlatform implements DynamicPlatformPlugin {
       // something globally unique, but constant, for example, the device serial
       // number or MAC address
 
-	  // TODO: Get MAC adress from Trio E
+      // TODO: Get MAC adress from Trio E
 
       const uuid = this.api.hap.uuid.generate(device.uniqueId);
 

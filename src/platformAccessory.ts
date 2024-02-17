@@ -11,6 +11,7 @@ import API from './api';
 export class TrioEPlatformAccessory {
   private faucetService: Service;
   private popupService: Service;
+  private thermostatService: Service;
   private API: API;
 
   /**
@@ -33,7 +34,7 @@ export class TrioEPlatformAccessory {
       .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Viega')
       .setCharacteristic(this.platform.Characteristic.Model, 'Multiplex Trio E')
       .setCharacteristic(this.platform.Characteristic.SerialNumber, 'ABCDEFGH')
-    //Water faucet here
+      //Water faucet here
       .setCharacteristic(this.platform.Characteristic.ValveType, 3);
 
     // TODO : Get State here
@@ -76,6 +77,23 @@ export class TrioEPlatformAccessory {
       .onGet(this.isPopupOpen.bind(this))
       .onSet(this.setPopupOpen.bind(this));
 
+    this.thermostatService = this.accessory.getService(this.platform.Service.Thermostat) || this.accessory.addService(this.platform.Service.Thermostat);
+    this.thermostatService.setCharacteristic(this.platform.Characteristic.Name, 'Temperature');
+    const temperatureCharacteristic = this.thermostatService.getCharacteristic(this.platform.Characteristic.TargetTemperature);
+    temperatureCharacteristic.props.minValue = 4;
+    temperatureCharacteristic.props.maxValue = 50;
+    temperatureCharacteristic.onGet(() => this.state.Temperature);
+    temperatureCharacteristic.onSet((temperature) => this.state.Temperature = temperature as number);
+    this.thermostatService.getCharacteristic(this.platform.Characteristic.CurrentTemperature).onGet(() => this.state.Temperature);
+    this.thermostatService.getCharacteristic(this.platform.Characteristic.TemperatureDisplayUnits)
+      .onGet(() => this.platform.Characteristic.TemperatureDisplayUnits.CELSIUS)
+      .onSet(() => this.platform.Characteristic.TemperatureDisplayUnits.CELSIUS);
+    this.thermostatService.getCharacteristic(this.platform.Characteristic.TargetHeaterCoolerState)
+      .onGet(() => this.platform.Characteristic.TargetHeaterCoolerState.AUTO)
+      .onSet(() => this.platform.Characteristic.TargetHeaterCoolerState.AUTO);
+    this.thermostatService.getCharacteristic(this.platform.Characteristic.CurrentHeaterCoolerState)
+      .onGet(() => this.platform.Characteristic.CurrentHeaterCoolerState.HEATING)
+      .onSet(() => this.platform.Characteristic.CurrentHeaterCoolerState.HEATING);
   }
 
   async isPopupOpen(): Promise<CharacteristicValue> {
