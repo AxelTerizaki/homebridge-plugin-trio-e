@@ -56,12 +56,8 @@ export class TrioEPlatform implements DynamicPlatformPlugin {
     // or a user-defined array in the platform config.
     const TrioEDevices = [
       {
-        uniqueId: 'TRIOEPOPUP',
-        displayName: 'Popup',
-      },
-      {
-        uniqueId: 'TRIOEFAUCET',
-        displayName: 'Faucet',
+        uniqueId: 'TRIOE',
+        displayName: 'Trio E',
       },
     ];
 

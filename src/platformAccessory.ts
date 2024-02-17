@@ -8,7 +8,7 @@ import { TrioEPlatform } from './platform';
  * Each accessory may expose multiple services of different service types.
  */
 export class TrioEPlatformAccessory {
-  private service: Service;
+  private faucetService: Service;
 
   /**
    * These are just used to create a working example
@@ -35,22 +35,22 @@ export class TrioEPlatformAccessory {
       .setCharacteristic(this.platform.Characteristic.ValveType, 3);
     // get the Valve service if it exists, otherwise create a new LightBulb service
     // you can create multiple services for each accessory
-    this.service = this.accessory.getService(this.platform.Service.Valve) || this.accessory.addService(this.platform.Service.Valve);
+    this.faucetService = this.accessory.getService(this.platform.Service.Valve) || this.accessory.addService(this.platform.Service.Valve);
 
     // set the service name, this is what is displayed as the default name on the Home app
     // in this example we are using the name we stored in the `accessory.context` in the `discoverDevices` method.
-    this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
+    this.faucetService.setCharacteristic(this.platform.Characteristic.Name, accessory.context.device.displayName);
 
     // each service must implement at-minimum the "required characteristics" for the given service type
     // see https://developers.homebridge.io/#/service/Lightbulb
 
     // register handlers for the On/Off Characteristic
-    this.service.getCharacteristic(this.platform.Characteristic.On)
+    this.faucetService.getCharacteristic(this.platform.Characteristic.On)
       .onSet(this.setOn.bind(this))                // SET - bind to the `setOn` method below
       .onGet(this.getOn.bind(this));               // GET - bind to the `getOn` method below
 
     // register handlers for the Brightness Characteristic
-    this.service.getCharacteristic(this.platform.Characteristic.Brightness)
+    this.faucetService.getCharacteristic(this.platform.Characteristic.Brightness)
       .onSet(this.setFlow.bind(this));       // SET - bind to the 'setBrightness` method below
 
     /**
