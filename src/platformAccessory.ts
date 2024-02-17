@@ -65,12 +65,12 @@ export class TrioEPlatformAccessory {
         () => this.platform.Characteristic.TemperatureDisplayUnits.CELSIUS,
       );
     this.thermostatService
-      .getCharacteristic(this.platform.Characteristic.TargetHeaterCoolerState)
-      .onGet(() => this.platform.Characteristic.TargetHeaterCoolerState.AUTO);
+      .getCharacteristic(this.platform.Characteristic.TargetHeatingCoolingState)
+      .onGet(() => this.platform.Characteristic.TargetHeatingCoolingState.AUTO);
     this.thermostatService
-      .getCharacteristic(this.platform.Characteristic.CurrentHeaterCoolerState)
+      .getCharacteristic(this.platform.Characteristic.CurrentHeatingCoolingState)
       .onGet(
-        () => this.platform.Characteristic.CurrentHeaterCoolerState.HEATING,
+        () => this.platform.Characteristic.CurrentHeatingCoolingState.HEAT,
       );
 
     this.flowService =
