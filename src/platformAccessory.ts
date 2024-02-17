@@ -6,6 +6,7 @@ import API from './api';
 export class TrioEPlatformAccessory {
   private popupService: Service;
   private thermostatService: Service;
+  private flowService: Service;
   private API: API;
 
   private state = {
@@ -60,22 +61,36 @@ export class TrioEPlatformAccessory {
       .onGet(() => this.state.Temperature);
     this.thermostatService
       .getCharacteristic(this.platform.Characteristic.TemperatureDisplayUnits)
-      .onGet(() => this.platform.Characteristic.TemperatureDisplayUnits.CELSIUS)
-      .onSet(
+      .onGet(
         () => this.platform.Characteristic.TemperatureDisplayUnits.CELSIUS,
       );
     this.thermostatService
       .getCharacteristic(this.platform.Characteristic.TargetHeaterCoolerState)
-      .onGet(() => this.platform.Characteristic.TargetHeaterCoolerState.AUTO)
-      .onSet(() => this.platform.Characteristic.TargetHeaterCoolerState.AUTO);
+      .onGet(() => this.platform.Characteristic.TargetHeaterCoolerState.AUTO);
     this.thermostatService
       .getCharacteristic(this.platform.Characteristic.CurrentHeaterCoolerState)
       .onGet(
         () => this.platform.Characteristic.CurrentHeaterCoolerState.HEATING,
-      )
-      .onSet(
-        () => this.platform.Characteristic.CurrentHeaterCoolerState.HEATING,
       );
+
+    this.flowService =
+      this.accessory.getService(this.platform.Service.Window) ||
+      this.accessory.addService(this.platform.Service.Window);
+    this.flowService.setCharacteristic(
+      this.platform.Characteristic.Name,
+      'Flow',
+    );
+    this.flowService.setCharacteristic(
+      this.platform.Characteristic.PositionState,
+      this.platform.Characteristic.PositionState.STOPPED,
+    );
+    this.flowService
+      .getCharacteristic(this.platform.Characteristic.CurrentPosition)
+      .onGet(() => this.state.Flow * 100);
+    this.flowService
+      .getCharacteristic(this.platform.Characteristic.TargetPosition)
+      .onGet(() => this.state.Flow * 100)
+      .onSet((flow) => (this.state.Flow = (flow as number) / 100));
   }
 
   async isPopupOpen(): Promise<CharacteristicValue> {
