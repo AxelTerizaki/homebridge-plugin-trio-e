@@ -12,7 +12,7 @@ export class TrioEPlatformAccessory {
 
   private state = {
     Flow: 1,
-    Amount: 0,
+    Duration: 0,
     Temperature: 38,
   };
 
@@ -70,7 +70,9 @@ export class TrioEPlatformAccessory {
       .getCharacteristic(this.platform.Characteristic.TargetHeatingCoolingState)
       .onGet(() => this.platform.Characteristic.TargetHeatingCoolingState.AUTO);
     this.thermostatService
-      .getCharacteristic(this.platform.Characteristic.CurrentHeatingCoolingState)
+      .getCharacteristic(
+        this.platform.Characteristic.CurrentHeatingCoolingState,
+      )
       .onGet(
         () => this.platform.Characteristic.CurrentHeatingCoolingState.HEAT,
       );
@@ -94,17 +96,31 @@ export class TrioEPlatformAccessory {
       .onGet(() => this.state.Flow * 100)
       .onSet((flow) => (this.state.Flow = (flow as number) / 100));
 
-    this.fillService = this.accessory.getService(this.platform.Service.Valve) || this.accessory.addService(this.platform.Service.Valve);
-    this.fillService.setCharacteristic(this.platform.Characteristic.Name, 'Fill Bath');
-    this.fillService.setCharacteristic(this.platform.Characteristic.ValveType, this.platform.Characteristic.ValveType.WATER_FAUCET);
-    this.fillService.getCharacteristic(this.platform.Characteristic.Active)
+    this.fillService =
+      this.accessory.getService(this.platform.Service.Valve) ||
+      this.accessory.addService(this.platform.Service.Valve);
+    this.fillService.setCharacteristic(
+      this.platform.Characteristic.Name,
+      'Fill Bath',
+    );
+    this.fillService.setCharacteristic(
+      this.platform.Characteristic.ValveType,
+      this.platform.Characteristic.ValveType.WATER_FAUCET,
+    );
+    this.fillService
+      .getCharacteristic(this.platform.Characteristic.Active)
       .onGet(this.isFilling.bind(this))
       .onSet(this.fillBathtub.bind(this));
-    this.fillService.getCharacteristic(this.platform.Characteristic.InUse).onGet(this.isFilling.bind(this));
-    this.fillService.getCharacteristic(this.platform.Characteristic.RemainingDuration).onGet(this.getProgress.bind(this));
-    this.fillService.getCharacteristic(this.platform.Characteristic.SetDuration)
-      .onGet(() => this.state.Amount)
-      .onSet((value) => this.state.Amount = value as number);
+    this.fillService
+      .getCharacteristic(this.platform.Characteristic.InUse)
+      .onGet(this.isFilling.bind(this));
+    this.fillService
+      .getCharacteristic(this.platform.Characteristic.RemainingDuration)
+      .onGet(this.getProgress.bind(this));
+    this.fillService
+      .getCharacteristic(this.platform.Characteristic.SetDuration)
+      .onGet(() => this.state.Duration)
+      .onSet((value) => (this.state.Duration = value as number));
   }
 
   async isPopupOpen(): Promise<CharacteristicValue> {
@@ -118,7 +134,7 @@ export class TrioEPlatformAccessory {
 
   async isFilling(): Promise<CharacteristicValue> {
     const res = await this.API.getState();
-    return res.state === 'a';
+    return res.state !== 'a';
   }
 
   async getProgress(): Promise<CharacteristicValue> {
@@ -131,12 +147,7 @@ export class TrioEPlatformAccessory {
 
     if (proceed) {
       await this.API.postQuick();
-
-      if (this.state.Amount > 0) {
-        await this.API.postBathtubFill(this.state.Temperature, this.state.Amount);
-      } else {
-        await this.API.postTlc(this.state.Temperature, this.state.Flow, true);
-      }
+      await this.API.postTlc(this.state.Temperature, this.state.Flow, true);
     } else {
       await this.API.postTlc(this.state.Temperature, this.state.Flow, false);
     }
