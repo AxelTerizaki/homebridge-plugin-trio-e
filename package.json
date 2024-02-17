@@ -30,7 +30,6 @@
     "viega",
     "bath"
   ],
-  "dependencies": {},
   "devDependencies": {
     "@types/node": "^20.11.19",
     "@typescript-eslint/eslint-plugin": "^7.0.1",
@@ -40,8 +39,12 @@
     "homebridge": "^1.7.0",
     "homebridge-config-ui-x": "^4.55.1",
     "nodemon": "^3.0.3",
+    "prettier": "^3.2.5",
     "rimraf": "^5.0.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
+  },
+  "prettier": {
+    "singleQuote": true
   }
 }
