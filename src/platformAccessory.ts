@@ -1,6 +1,7 @@
 import { Service, PlatformAccessory, CharacteristicValue } from 'homebridge';
 
 import { TrioEPlatform } from './platform';
+import API from './api';
 
 /**
  * Platform Accessory
@@ -9,14 +10,14 @@ import { TrioEPlatform } from './platform';
  */
 export class TrioEPlatformAccessory {
   private faucetService: Service;
+  private popupService: Service;
+  private API: API;
 
   /**
    * These are just used to create a working example
    * You should implement your own code to track the state of your accessory
    */
   private state = {
-    Faucet: false,
-    Popup: false,
     Flow: 1,
     Temperature: 38,
   };
@@ -25,13 +26,14 @@ export class TrioEPlatformAccessory {
     private readonly platform: TrioEPlatform,
     private readonly accessory: PlatformAccessory,
   ) {
+    this.API = new API(1, this.platform.config.ip, this.platform.config.secure ? 'https' : 'http');
 
     // set accessory information
     this.accessory.getService(this.platform.Service.AccessoryInformation)!
       .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Viega')
       .setCharacteristic(this.platform.Characteristic.Model, 'Multiplex Trio E')
       .setCharacteristic(this.platform.Characteristic.SerialNumber, 'ABCDEFGH')
-	  //Water faucet here
+    //Water faucet here
       .setCharacteristic(this.platform.Characteristic.ValveType, 3);
 
     // TODO : Get State here
@@ -68,6 +70,21 @@ export class TrioEPlatformAccessory {
      * can use the same sub type id.)
      */
 
+    this.popupService = this.accessory.getService(this.platform.Service.Switch) || this.accessory.addService(this.platform.Service.Switch);
+    this.popupService.setCharacteristic(this.platform.Characteristic.Name, 'Popup');
+    this.popupService.getCharacteristic(this.platform.Characteristic.On)
+      .onGet(this.isPopupOpen.bind(this))
+      .onSet(this.setPopupOpen.bind(this));
+
+  }
+
+  async isPopupOpen(): Promise<CharacteristicValue> {
+    const res = await this.API.getPopup();
+    return res.state === 1;
+  }
+
+  async setPopupOpen(value: CharacteristicValue) {
+    await this.API.postPopup(value as boolean);
   }
 
   /**
@@ -76,7 +93,7 @@ export class TrioEPlatformAccessory {
    */
   async setOn(value: CharacteristicValue) {
     // implement your own code to turn your device on/off
-    this.state.Faucet = value as boolean;
+    //this.state.Faucet = value as boolean;
 
     // TODO : Call API to turn on or off the faucet
 
@@ -98,16 +115,16 @@ export class TrioEPlatformAccessory {
    */
   async getOn(): Promise<CharacteristicValue> {
     // implement your own code to check if the device is on
-    const isOn = this.state.Faucet;
+    //const isOn = this.state.Faucet;
 
     // TODO: Get status from API for the faucet
 
-    this.platform.log.debug('Get Characteristic On ->', isOn);
+    //this.platform.log.debug('Get Characteristic On ->', isOn);
 
     // if you need to return an error to show the device as "Not Responding" in the Home app:
     // throw new this.platform.api.hap.HapStatusError(this.platform.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE);
 
-    return isOn;
+    return false;
   }
 
   /**

@@ -10,13 +10,13 @@
         "type": "string",
         "required": true,
         "format": "hostname",
-		"description": "The IP address or host your Trio E WLAN module responds to. Setup your DHCP server to give it a fixed IP!"
+        "description": "The IP address or host your Trio E WLAN module responds to. Setup your DHCP server to give it a fixed IP!"
       },
-	  "secure": {
+      "secure": {
         "title": "HTTPS connection",
         "type": "boolean",
         "default": false,
-		"description": "Use an HTTPS connection to talk to the WLAN module."
+        "description": "Use an HTTPS connection to talk to the WLAN module."
       }
     }
   }
