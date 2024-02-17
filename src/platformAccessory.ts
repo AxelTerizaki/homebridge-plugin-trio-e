@@ -72,7 +72,7 @@ export class TrioEPlatformAccessory {
    */
   async setOn(value: CharacteristicValue) {
     // implement your own code to turn your device on/off
-    this.state.On = value as boolean;
+    this.state.Faucet = value as boolean;
 
     // TODO : Call API to turn on or off the faucet
 
@@ -94,7 +94,7 @@ export class TrioEPlatformAccessory {
    */
   async getOn(): Promise<CharacteristicValue> {
     // implement your own code to check if the device is on
-    const isOn = this.state.On;
+    const isOn = this.state.Faucet;
 
     // TODO: Get status from API for the faucet
 
