@@ -68,31 +68,30 @@ export class TrioEPlatform implements DynamicPlatformPlugin {
     if (existingAccessory) {
       // the accessory already exists
       this.log.info(
-        'Restoring existing accessory from cache:',
+        'Removing existing accessory from cache:',
         existingAccessory.displayName,
       );
 
-      existingAccessory.context.device = device;
-      this.api.updatePlatformAccessories([existingAccessory]);
-
-      new TrioEPlatformAccessory(this, existingAccessory);
-    } else {
-      this.log.info('Adding new accessory:', device.displayName);
-
-      // create a new accessory
-      const accessory = new this.api.platformAccessory(
-        device.displayName,
-        device.uniqueId,
-      );
-
-      accessory.context.device = device;
-
-      new TrioEPlatformAccessory(this, accessory);
-
-      // link the accessory to your platform
-      this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
-        accessory,
+      this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
+        existingAccessory,
       ]);
     }
+
+    this.log.info('Adding new accessory:', device.displayName);
+
+    // create a new accessory
+    const accessory = new this.api.platformAccessory(
+      device.displayName,
+      device.uniqueId,
+    );
+
+    accessory.context.device = device;
+
+    new TrioEPlatformAccessory(this, accessory);
+
+    // link the accessory to your platform
+    this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
+      accessory,
+    ]);
   }
 }
