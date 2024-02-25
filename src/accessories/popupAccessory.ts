@@ -1,6 +1,6 @@
 import { CharacteristicValue, Service } from 'homebridge';
-import { TrioEPlatform } from '../platform';
 import API from '../api';
+import { TrioEPlatform } from '../platform';
 
 export const register = (service: Service, platform: TrioEPlatform) => {
   const api = new API(

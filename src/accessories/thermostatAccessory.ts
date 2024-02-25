@@ -1,6 +1,6 @@
 import { CharacteristicValue, Service } from 'homebridge';
-import { TrioEPlatform } from '../platform';
 import { getTemperature, setTemperature } from '../state';
+import { TrioEPlatform } from '../platform';
 
 export const register = (service: Service, platform: TrioEPlatform) => {
   service.setCharacteristic(platform.Characteristic.Name, 'Temperature');

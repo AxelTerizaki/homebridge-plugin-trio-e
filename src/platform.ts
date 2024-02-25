@@ -1,16 +1,15 @@
+import * as TrioEApi from './api';
 import {
   API,
+  Characteristic,
   DynamicPlatformPlugin,
   Logger,
   PlatformAccessory,
   PlatformConfig,
   Service,
-  Characteristic,
 } from 'homebridge';
-
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
 import { TrioEPlatformAccessory } from './platformAccessory';
-import * as TrioEApi from './api';
 
 /**
  * HomebridgePlatform

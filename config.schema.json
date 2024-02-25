@@ -17,6 +17,12 @@
         "type": "boolean",
         "default": false,
         "description": "Use an HTTPS connection to talk to the WLAN module."
+      },
+      "volume": {
+        "title": "Bathtub maximal volume",
+        "type": "number",
+        "default": 200,
+        "description": "Define the maximum capacity of the bathtub in liters."
       }
     }
   }

@@ -4,7 +4,7 @@ import { TrioEPlatform } from '../platform';
 import { getTemperature } from '../state';
 
 let CURRENT_INTERVAL: NodeJS.Timeout | null = null;
-let FLOW: number = 0;
+let VOLUME = 0;
 
 export const register = (service: Service, platform: TrioEPlatform) => {
   const api = new API(
@@ -12,30 +12,30 @@ export const register = (service: Service, platform: TrioEPlatform) => {
     platform.config.ip,
     platform.config.secure ? 'https' : 'http',
   );
+  const volumeMax = platform.config.volume || 200;
 
-  service.setCharacteristic(platform.Characteristic.Name, 'Fill by flow');
+  service.setCharacteristic(platform.Characteristic.Name, 'Fill by volume');
 
   service
     .getCharacteristic(platform.Characteristic.Brightness)
-    .onGet(() => FLOW * 100)
-    .onSet((value: CharacteristicValue) => FLOW = value as number / 100);
+    .onGet(() => VOLUME * volumeMax / 100)
+    .onSet((value: CharacteristicValue) => VOLUME = value as number / volumeMax / 100);
 
   service
     .getCharacteristic(platform.Characteristic.On)
-    .onGet(() => FLOW > 0)
+    .onGet(() => VOLUME > 0)
     .onSet(async (value: CharacteristicValue) => {
       if (value) {
-        if (FLOW === 0) {
-          FLOW = 1;
+        if (VOLUME === 0) {
+          VOLUME = volumeMax;
         }
 
-        await api.postQuick();
-        await api.postTlc(getTemperature(), FLOW / 100, true);
+        await api.postBathtubFill(getTemperature(), VOLUME);
         CURRENT_INTERVAL = setInterval(api.getState, 1);
       } else {
-        FLOW = 0;
+        VOLUME = 0;
 
-        await api.postTlc(getTemperature(), FLOW / 100, false);
+        await api.postTlc(getTemperature(), 0, false);
         if (CURRENT_INTERVAL) {
           clearInterval(CURRENT_INTERVAL);
           CURRENT_INTERVAL = null;
