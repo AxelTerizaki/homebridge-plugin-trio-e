@@ -1,7 +1,8 @@
 import { Service, PlatformAccessory, CharacteristicValue } from 'homebridge';
 
-import { TrioEPlatform } from './platform';
 import API from './api';
+import * as popupAccessory from './accessories/popupAccessory';
+import { TrioEPlatform } from './platform';
 
 export class TrioEPlatformAccessory {
   private popupService: Service;
@@ -36,14 +37,7 @@ export class TrioEPlatformAccessory {
     this.popupService =
       this.accessory.getService(this.platform.Service.Switch) ||
       this.accessory.addService(this.platform.Service.Switch);
-    this.popupService.setCharacteristic(
-      this.platform.Characteristic.Name,
-      'Popup',
-    );
-    this.popupService
-      .getCharacteristic(this.platform.Characteristic.On)
-      .onGet(this.isPopupOpen.bind(this))
-      .onSet(this.setPopupOpen.bind(this));
+    popupAccessory.register(this.popupService, this.platform);
 
     this.thermostatService =
       this.accessory.getService(this.platform.Service.Thermostat) ||
@@ -70,7 +64,9 @@ export class TrioEPlatformAccessory {
       .getCharacteristic(this.platform.Characteristic.TargetHeatingCoolingState)
       .onGet(() => this.platform.Characteristic.TargetHeatingCoolingState.AUTO)
       .onSet((value: CharacteristicValue) => {
-        if (value !== this.platform.Characteristic.TargetHeaterCoolerState.AUTO) {
+        if (
+          value !== this.platform.Characteristic.TargetHeaterCoolerState.AUTO
+        ) {
           this.thermostatService.setCharacteristic(
             this.platform.Characteristic.TargetHeatingCoolingState,
             this.platform.Characteristic.TargetHeaterCoolerState.AUTO,
@@ -81,11 +77,11 @@ export class TrioEPlatformAccessory {
       .getCharacteristic(
         this.platform.Characteristic.CurrentHeatingCoolingState,
       )
-      .onGet(
-        () => this.platform.Characteristic.CurrentHeatingCoolingState.OFF,
-      )
+      .onGet(() => this.platform.Characteristic.CurrentHeatingCoolingState.OFF)
       .onSet((value: CharacteristicValue) => {
-        if (value !== this.platform.Characteristic.CurrentHeatingCoolingState.OFF) {
+        if (
+          value !== this.platform.Characteristic.CurrentHeatingCoolingState.OFF
+        ) {
           this.thermostatService.setCharacteristic(
             this.platform.Characteristic.CurrentHeatingCoolingState,
             this.platform.Characteristic.CurrentHeatingCoolingState.OFF,
@@ -137,15 +133,6 @@ export class TrioEPlatformAccessory {
       .getCharacteristic(this.platform.Characteristic.SetDuration)
       .onGet(() => this.state.Duration)
       .onSet((value) => (this.state.Duration = value as number));
-  }
-
-  async isPopupOpen(): Promise<CharacteristicValue> {
-    const res = await this.API.getPopup();
-    return res.state === 1;
-  }
-
-  async setPopupOpen(value: CharacteristicValue) {
-    await this.API.postPopup(value as boolean);
   }
 
   async isFilling(): Promise<CharacteristicValue> {
