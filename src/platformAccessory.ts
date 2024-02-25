@@ -68,14 +68,30 @@ export class TrioEPlatformAccessory {
       );
     this.thermostatService
       .getCharacteristic(this.platform.Characteristic.TargetHeatingCoolingState)
-      .onGet(() => this.platform.Characteristic.TargetHeatingCoolingState.AUTO);
+      .onGet(() => this.platform.Characteristic.TargetHeatingCoolingState.AUTO)
+      .onSet((value: CharacteristicValue) => {
+        if (value !== this.platform.Characteristic.TargetHeaterCoolerState.AUTO) {
+          this.thermostatService.setCharacteristic(
+            this.platform.Characteristic.TargetHeatingCoolingState,
+            this.platform.Characteristic.TargetHeaterCoolerState.AUTO,
+          );
+        }
+      });
     this.thermostatService
       .getCharacteristic(
         this.platform.Characteristic.CurrentHeatingCoolingState,
       )
       .onGet(
-        () => this.platform.Characteristic.CurrentHeatingCoolingState.HEAT,
-      );
+        () => this.platform.Characteristic.CurrentHeatingCoolingState.OFF,
+      )
+      .onSet((value: CharacteristicValue) => {
+        if (value !== this.platform.Characteristic.CurrentHeatingCoolingState.OFF) {
+          this.thermostatService.setCharacteristic(
+            this.platform.Characteristic.CurrentHeatingCoolingState,
+            this.platform.Characteristic.CurrentHeatingCoolingState.OFF,
+          );
+        }
+      });
 
     this.flowService =
       this.accessory.getService(this.platform.Service.Window) ||

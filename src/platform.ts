@@ -76,15 +76,6 @@ export class TrioEPlatform implements DynamicPlatformPlugin {
       this.api.updatePlatformAccessories([existingAccessory]);
 
       new TrioEPlatformAccessory(this, existingAccessory);
-
-      this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
-        existingAccessory,
-      ]);
-
-      this.log.info(
-        'Removing existing accessory from cache:',
-        existingAccessory.displayName,
-      );
     } else {
       this.log.info('Adding new accessory:', device.displayName);
 
