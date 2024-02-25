@@ -20,24 +20,24 @@ export const register = (service: Service, platform: TrioEPlatform) => {
 
   service
     .getCharacteristic(platform.Characteristic.TargetHeatingCoolingState)
-    .onGet(() => platform.Characteristic.TargetHeatingCoolingState.AUTO)
+    .onGet(() => platform.Characteristic.TargetHeatingCoolingState.HEAT)
     .onSet((value: CharacteristicValue) => {
-      if (value !== platform.Characteristic.TargetHeaterCoolerState.AUTO) {
+      if (value !== platform.Characteristic.TargetHeaterCoolerState.HEAT) {
         service.setCharacteristic(
           platform.Characteristic.TargetHeatingCoolingState,
-          platform.Characteristic.TargetHeaterCoolerState.AUTO,
+          platform.Characteristic.TargetHeaterCoolerState.HEAT,
         );
       }
     });
 
   service
     .getCharacteristic(platform.Characteristic.CurrentHeatingCoolingState)
-    .onGet(() => platform.Characteristic.CurrentHeatingCoolingState.OFF)
+    .onGet(() => platform.Characteristic.CurrentHeatingCoolingState.HEAT)
     .onSet((value: CharacteristicValue) => {
-      if (value !== platform.Characteristic.CurrentHeatingCoolingState.OFF) {
+      if (value !== platform.Characteristic.CurrentHeatingCoolingState.HEAT) {
         service.setCharacteristic(
           platform.Characteristic.CurrentHeatingCoolingState,
-          platform.Characteristic.CurrentHeatingCoolingState.OFF,
+          platform.Characteristic.CurrentHeatingCoolingState.HEAT,
         );
       }
     });
