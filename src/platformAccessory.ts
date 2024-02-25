@@ -2,6 +2,7 @@ import { Service, PlatformAccessory, CharacteristicValue } from 'homebridge';
 
 import API from './api';
 import * as popupAccessory from './accessories/popupAccessory';
+import * as thermostatAccessory from './accessories/thermostatAccessory';
 import { TrioEPlatform } from './platform';
 
 export class TrioEPlatformAccessory {
@@ -42,52 +43,7 @@ export class TrioEPlatformAccessory {
     this.thermostatService =
       this.accessory.getService(this.platform.Service.Thermostat) ||
       this.accessory.addService(this.platform.Service.Thermostat);
-    this.thermostatService.setCharacteristic(
-      this.platform.Characteristic.Name,
-      'Temperature',
-    );
-    const temperatureCharacteristic = this.thermostatService
-      .getCharacteristic(this.platform.Characteristic.TargetTemperature)
-      .onGet(() => this.state.Temperature)
-      .onSet((temperature) => (this.state.Temperature = temperature as number));
-    temperatureCharacteristic.props.minValue = 4;
-    temperatureCharacteristic.props.maxValue = 50;
-    this.thermostatService
-      .getCharacteristic(this.platform.Characteristic.CurrentTemperature)
-      .onGet(() => this.state.Temperature);
-    this.thermostatService
-      .getCharacteristic(this.platform.Characteristic.TemperatureDisplayUnits)
-      .onGet(
-        () => this.platform.Characteristic.TemperatureDisplayUnits.CELSIUS,
-      );
-    this.thermostatService
-      .getCharacteristic(this.platform.Characteristic.TargetHeatingCoolingState)
-      .onGet(() => this.platform.Characteristic.TargetHeatingCoolingState.AUTO)
-      .onSet((value: CharacteristicValue) => {
-        if (
-          value !== this.platform.Characteristic.TargetHeaterCoolerState.AUTO
-        ) {
-          this.thermostatService.setCharacteristic(
-            this.platform.Characteristic.TargetHeatingCoolingState,
-            this.platform.Characteristic.TargetHeaterCoolerState.AUTO,
-          );
-        }
-      });
-    this.thermostatService
-      .getCharacteristic(
-        this.platform.Characteristic.CurrentHeatingCoolingState,
-      )
-      .onGet(() => this.platform.Characteristic.CurrentHeatingCoolingState.OFF)
-      .onSet((value: CharacteristicValue) => {
-        if (
-          value !== this.platform.Characteristic.CurrentHeatingCoolingState.OFF
-        ) {
-          this.thermostatService.setCharacteristic(
-            this.platform.Characteristic.CurrentHeatingCoolingState,
-            this.platform.Characteristic.CurrentHeatingCoolingState.OFF,
-          );
-        }
-      });
+    thermostatAccessory.register(this.thermostatService, this.platform);
 
     this.flowService =
       this.accessory.getService(this.platform.Service.Window) ||

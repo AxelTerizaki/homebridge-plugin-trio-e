@@ -10,6 +10,7 @@ export const register = (service: Service, platform: TrioEPlatform) => {
   );
 
   service.setCharacteristic(platform.Characteristic.Name, 'Popup');
+
   service
     .getCharacteristic(platform.Characteristic.On)
     .onGet(async () => {
