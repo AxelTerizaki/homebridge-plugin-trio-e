@@ -1,6 +1,7 @@
 import { Service, PlatformAccessory, CharacteristicValue } from 'homebridge';
 
 import API from './api';
+import * as flowAccessory from './accessories/flowAccessory';
 import * as popupAccessory from './accessories/popupAccessory';
 import * as thermostatAccessory from './accessories/thermostatAccessory';
 import { TrioEPlatform } from './platform';
@@ -46,23 +47,9 @@ export class TrioEPlatformAccessory {
     thermostatAccessory.register(this.thermostatService, this.platform);
 
     this.flowService =
-      this.accessory.getService(this.platform.Service.Window) ||
-      this.accessory.addService(this.platform.Service.Window);
-    this.flowService.setCharacteristic(
-      this.platform.Characteristic.Name,
-      'Flow',
-    );
-    this.flowService.setCharacteristic(
-      this.platform.Characteristic.PositionState,
-      this.platform.Characteristic.PositionState.STOPPED,
-    );
-    this.flowService
-      .getCharacteristic(this.platform.Characteristic.CurrentPosition)
-      .onGet(() => this.state.Flow * 100);
-    this.flowService
-      .getCharacteristic(this.platform.Characteristic.TargetPosition)
-      .onGet(() => this.state.Flow * 100)
-      .onSet((flow) => (this.state.Flow = (flow as number) / 100));
+      this.accessory.getService(this.platform.Service.Lightbulb) ||
+      this.accessory.addService(this.platform.Service.Lightbulb);
+    flowAccessory.register(this.flowService, this.platform);
 
     this.fillService =
       this.accessory.getService(this.platform.Service.Valve) ||
