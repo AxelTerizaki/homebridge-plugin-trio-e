@@ -18,7 +18,7 @@ export const register = (service: Service, platform: TrioEPlatform) => {
   service
     .getCharacteristic(platform.Characteristic.Brightness)
     .onGet(() => FLOW * 100)
-    .onSet((value: CharacteristicValue) => FLOW = value as number / 100);
+    .onSet((value: CharacteristicValue) => (FLOW = (value as number) / 100));
 
   service
     .getCharacteristic(platform.Characteristic.On)
@@ -31,7 +31,13 @@ export const register = (service: Service, platform: TrioEPlatform) => {
 
         await api.postQuick();
         await api.postTlc(getTemperature(), FLOW / 100, true);
-        CURRENT_INTERVAL = setInterval(api.getState, 1);
+        CURRENT_INTERVAL = setInterval(async () => {
+          const res = await api.getState();
+          if (res.state === 'a' && CURRENT_INTERVAL) {
+            clearInterval(CURRENT_INTERVAL);
+            CURRENT_INTERVAL = null;
+          }
+        }, 1);
       } else {
         FLOW = 0;
 

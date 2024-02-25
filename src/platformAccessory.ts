@@ -1,6 +1,7 @@
 import * as flowAccessory from './accessories/flowAccessory';
 import * as popupAccessory from './accessories/popupAccessory';
 import * as thermostatAccessory from './accessories/thermostatAccessory';
+import * as volumeAccessory from './accessories/volumeAccessory';
 
 import { PlatformAccessory } from 'homebridge';
 import { TrioEPlatform } from './platform';
@@ -13,7 +14,10 @@ export class TrioEPlatformAccessory {
     this.accessory
       .getService(this.platform.Service.AccessoryInformation)!
       .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Viega')
-      .setCharacteristic(this.platform.Characteristic.Model, 'Multiplex Trio E');
+      .setCharacteristic(
+        this.platform.Characteristic.Model,
+        'Multiplex Trio E',
+      );
 
     const popupService =
       this.accessory.getService(this.platform.Service.Switch) ||
@@ -33,5 +37,6 @@ export class TrioEPlatformAccessory {
     const volumeService =
       this.accessory.getService(this.platform.Service.Lightbulb) ||
       this.accessory.addService(this.platform.Service.Lightbulb);
+    volumeAccessory.register(volumeService, this.platform);
   }
 }

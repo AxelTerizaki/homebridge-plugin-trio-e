@@ -18,8 +18,11 @@ export const register = (service: Service, platform: TrioEPlatform) => {
 
   service
     .getCharacteristic(platform.Characteristic.Brightness)
-    .onGet(() => VOLUME * volumeMax / 100)
-    .onSet((value: CharacteristicValue) => VOLUME = value as number / volumeMax / 100);
+    .onGet(() => (VOLUME * volumeMax) / 100)
+    .onSet(
+      (value: CharacteristicValue) =>
+        (VOLUME = (value as number) / volumeMax / 100),
+    );
 
   service
     .getCharacteristic(platform.Characteristic.On)
@@ -31,7 +34,13 @@ export const register = (service: Service, platform: TrioEPlatform) => {
         }
 
         await api.postBathtubFill(getTemperature(), VOLUME);
-        CURRENT_INTERVAL = setInterval(api.getState, 1);
+        CURRENT_INTERVAL = setInterval(async () => {
+          const res = await api.getState();
+          if (res.state === 'a' && CURRENT_INTERVAL) {
+            clearInterval(CURRENT_INTERVAL);
+            CURRENT_INTERVAL = null;
+          }
+        }, 1);
       } else {
         VOLUME = 0;
 
