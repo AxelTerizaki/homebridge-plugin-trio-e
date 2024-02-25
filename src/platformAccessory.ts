@@ -19,24 +19,24 @@ export class TrioEPlatformAccessory {
         'Multiplex Trio E',
       );
 
-    const popupService =
-      this.accessory.getService(this.platform.Service.Switch) ||
-      this.accessory.addService(this.platform.Service.Switch);
+    const popupService = this.accessory.addService(
+      new this.platform.Service.Switch('Popup'),
+    );
     popupAccessory.register(popupService, this.platform);
 
-    const thermostatService =
-      this.accessory.getService(this.platform.Service.Thermostat) ||
-      this.accessory.addService(this.platform.Service.Thermostat);
+    const thermostatService = this.accessory.addService(
+      new this.platform.Service.Thermostat('Temperature'),
+    );
     thermostatAccessory.register(thermostatService, this.platform);
 
-    const flowService =
-      this.accessory.getService(this.platform.Service.Lightbulb) ||
-      this.accessory.addService(this.platform.Service.Lightbulb);
+    const flowService = this.accessory.addService(
+      new this.platform.Service.Lightbulb('Fill by flow', 'flow'),
+    );
     flowAccessory.register(flowService, this.platform);
 
-    const volumeService =
-      this.accessory.getService(this.platform.Service.Lightbulb) ||
-      this.accessory.addService(this.platform.Service.Lightbulb);
+    const volumeService = this.accessory.addService(
+      new this.platform.Service.Lightbulb('Fill by volume', 'volume'),
+    );
     volumeAccessory.register(volumeService, this.platform);
   }
 }

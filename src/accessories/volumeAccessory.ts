@@ -14,15 +14,12 @@ export const register = (service: Service, platform: TrioEPlatform) => {
   );
   const volumeMax = platform.config.volume || 200;
 
-  service.setCharacteristic(platform.Characteristic.Name, 'Fill by volume');
-
   service
     .getCharacteristic(platform.Characteristic.Brightness)
     .onGet(() => (VOLUME * volumeMax) / 100)
-    .onSet(
-      (value: CharacteristicValue) =>
-        (VOLUME = (value as number) / volumeMax / 100),
-    );
+    .onSet((value: CharacteristicValue) => {
+      VOLUME = (value as number) / volumeMax / 100;
+    });
 
   service
     .getCharacteristic(platform.Characteristic.On)
@@ -40,7 +37,7 @@ export const register = (service: Service, platform: TrioEPlatform) => {
             clearInterval(CURRENT_INTERVAL);
             CURRENT_INTERVAL = null;
           }
-        }, 1);
+        }, 1000);
       } else {
         VOLUME = 0;
 

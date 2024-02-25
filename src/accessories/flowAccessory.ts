@@ -13,12 +13,12 @@ export const register = (service: Service, platform: TrioEPlatform) => {
     platform.config.secure ? 'https' : 'http',
   );
 
-  service.setCharacteristic(platform.Characteristic.Name, 'Fill by flow');
-
   service
     .getCharacteristic(platform.Characteristic.Brightness)
     .onGet(() => FLOW * 100)
-    .onSet((value: CharacteristicValue) => (FLOW = (value as number) / 100));
+    .onSet((value: CharacteristicValue) => {
+      FLOW = (value as number) / 100;
+    });
 
   service
     .getCharacteristic(platform.Characteristic.On)
@@ -37,7 +37,7 @@ export const register = (service: Service, platform: TrioEPlatform) => {
             clearInterval(CURRENT_INTERVAL);
             CURRENT_INTERVAL = null;
           }
-        }, 1);
+        }, 1000);
       } else {
         FLOW = 0;
 

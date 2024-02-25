@@ -9,13 +9,13 @@ export const register = (service: Service, platform: TrioEPlatform) => {
     platform.config.secure ? 'https' : 'http',
   );
 
-  service.setCharacteristic(platform.Characteristic.Name, 'Popup');
-
   service
     .getCharacteristic(platform.Characteristic.On)
     .onGet(async () => {
       const res = await api.getPopup();
       return res.state === 1;
     })
-    .onSet((value: CharacteristicValue) => api.postPopup(value as boolean));
+    .onSet((value: CharacteristicValue) => {
+      api.postPopup(value as boolean);
+    });
 };

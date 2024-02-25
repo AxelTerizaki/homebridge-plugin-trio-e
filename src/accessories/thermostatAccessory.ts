@@ -3,8 +3,6 @@ import { getTemperature, setTemperature } from '../state';
 import { TrioEPlatform } from '../platform';
 
 export const register = (service: Service, platform: TrioEPlatform) => {
-  service.setCharacteristic(platform.Characteristic.Name, 'Temperature');
-
   const temperatureCharacteristic = service
     .getCharacteristic(platform.Characteristic.TargetTemperature)
     .onGet(getTemperature)
