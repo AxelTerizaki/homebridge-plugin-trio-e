@@ -1,7 +1,7 @@
 {
   "displayName": "Trio E",
   "name": "homebridge-trio-e",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Plugin for Viega's Multiplex Trio E bath control system",
   "license": "Apache-2.0",
   "repository": {
