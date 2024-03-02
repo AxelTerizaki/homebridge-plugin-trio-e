@@ -1,9 +1,11 @@
 import { CharacteristicValue, Service } from 'homebridge';
 import API from '../api';
 import { TrioEPlatform } from '../platform';
+import { debounce } from 'lodash';
 import { getTemperature } from '../state';
 
 let CURRENT_INTERVAL: NodeJS.Timeout | null = null;
+let VOLUME = 0;
 
 export const register = (service: Service, platform: TrioEPlatform) => {
   const api = new API(
@@ -15,12 +17,13 @@ export const register = (service: Service, platform: TrioEPlatform) => {
 
   service
     .getCharacteristic(platform.Characteristic.Brightness)
-    .onSet(async (value: CharacteristicValue) => {
-      const volume = ((value as number) * volumeMax) / 100;
+    .onGet(() => VOLUME / volumeMax * 100)
+    .onSet(debounce(async (value: CharacteristicValue) => {
+      VOLUME = ((value as number) * volumeMax) / 100;
 
-      if (volume > 0) {
-        console.log(`Fill by volume at ${volume}`);
-        await api.postBathtubFill(getTemperature(), volume);
+      if (VOLUME > 0) {
+        console.log(`Fill by volume at ${VOLUME}`);
+        await api.postBathtubFill(getTemperature(), VOLUME);
         removeInterval();
         CURRENT_INTERVAL = setInterval(async () => {
           const res = await api.getState();
@@ -33,14 +36,12 @@ export const register = (service: Service, platform: TrioEPlatform) => {
         await api.postTlc(getTemperature(), 0, false);
         removeInterval();
       }
-    });
+    }, 500));
 
   service
     .getCharacteristic(platform.Characteristic.On)
     .onSet(async (value: CharacteristicValue) => {
-      if (!value as boolean) {
-        service.setCharacteristic(platform.Characteristic.Brightness, 0);
-      }
+      service.setCharacteristic(platform.Characteristic.Brightness, value as boolean ? 100 : 0);
     });
 };
 
