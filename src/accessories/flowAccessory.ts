@@ -4,7 +4,6 @@ import { TrioEPlatform } from '../platform';
 import { getTemperature } from '../state';
 
 let CURRENT_INTERVAL: NodeJS.Timeout | null = null;
-let FLOW: number = 0;
 
 export const register = (service: Service, platform: TrioEPlatform) => {
   const api = new API(
@@ -15,22 +14,12 @@ export const register = (service: Service, platform: TrioEPlatform) => {
 
   service
     .getCharacteristic(platform.Characteristic.Brightness)
-    .onGet(() => FLOW * 100)
-    .onSet((value: CharacteristicValue) => {
-      FLOW = (value as number) / 100;
-    });
-
-  service
-    .getCharacteristic(platform.Characteristic.On)
-    .onGet(() => FLOW > 0)
     .onSet(async (value: CharacteristicValue) => {
-      if (value) {
-        if (FLOW === 0) {
-          FLOW = 1;
-        }
+      const flow = value as number / 100;
 
+      if (flow > 0) {
         await api.postQuick();
-        await api.postTlc(getTemperature(), FLOW / 100, true);
+        await api.postTlc(getTemperature(), flow, true);
         CURRENT_INTERVAL = setInterval(async () => {
           const res = await api.getState();
           if (res.state === 'a' && CURRENT_INTERVAL) {
@@ -39,13 +28,17 @@ export const register = (service: Service, platform: TrioEPlatform) => {
           }
         }, 1000);
       } else {
-        FLOW = 0;
-
-        await api.postTlc(getTemperature(), FLOW / 100, false);
+        await api.postTlc(getTemperature(), flow, false);
         if (CURRENT_INTERVAL) {
           clearInterval(CURRENT_INTERVAL);
           CURRENT_INTERVAL = null;
         }
       }
+    });
+
+  service
+    .getCharacteristic(platform.Characteristic.On)
+    .onSet(async (value: CharacteristicValue) => {
+      service.setCharacteristic(platform.Characteristic.Brightness, value as boolean ? 100 : 0);
     });
 };
