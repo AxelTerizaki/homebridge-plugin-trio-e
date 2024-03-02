@@ -21,20 +21,17 @@ export const register = (service: Service, platform: TrioEPlatform) => {
         console.log(`Fill by flow at ${flow}`);
         await api.postQuick();
         await api.postTlc(getTemperature(), flow, true);
+        removeInterval();
         CURRENT_INTERVAL = setInterval(async () => {
           const res = await api.getState();
           if (res.state === 'a' && CURRENT_INTERVAL) {
-            clearInterval(CURRENT_INTERVAL);
-            CURRENT_INTERVAL = null;
+            removeInterval();
           }
         }, 1000);
       } else {
         console.log('Stop filling by flow');
         await api.postTlc(getTemperature(), flow, false);
-        if (CURRENT_INTERVAL) {
-          clearInterval(CURRENT_INTERVAL);
-          CURRENT_INTERVAL = null;
-        }
+        removeInterval();
       }
     });
 
@@ -45,4 +42,11 @@ export const register = (service: Service, platform: TrioEPlatform) => {
         service.setCharacteristic(platform.Characteristic.Brightness, 0);
       }
     });
+};
+
+const removeInterval = () => {
+  if (CURRENT_INTERVAL) {
+    clearInterval(CURRENT_INTERVAL);
+    CURRENT_INTERVAL = null;
+  }
 };

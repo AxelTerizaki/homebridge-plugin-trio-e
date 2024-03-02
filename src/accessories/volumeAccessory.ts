@@ -21,20 +21,17 @@ export const register = (service: Service, platform: TrioEPlatform) => {
       if (volume > 0) {
         console.log(`Fill by volume at ${volume}`);
         await api.postBathtubFill(getTemperature(), volume);
+        removeInterval();
         CURRENT_INTERVAL = setInterval(async () => {
           const res = await api.getState();
           if (res.state === 'a' && CURRENT_INTERVAL) {
-            clearInterval(CURRENT_INTERVAL);
-            CURRENT_INTERVAL = null;
+            removeInterval();
           }
         }, 1000);
       } else {
         console.log('Stop filling by volume');
         await api.postTlc(getTemperature(), 0, false);
-        if (CURRENT_INTERVAL) {
-          clearInterval(CURRENT_INTERVAL);
-          CURRENT_INTERVAL = null;
-        }
+        removeInterval();
       }
     });
 
@@ -45,4 +42,11 @@ export const register = (service: Service, platform: TrioEPlatform) => {
         service.setCharacteristic(platform.Characteristic.Brightness, 0);
       }
     });
+};
+
+const removeInterval = () => {
+  if (CURRENT_INTERVAL) {
+    clearInterval(CURRENT_INTERVAL);
+    CURRENT_INTERVAL = null;
+  }
 };
