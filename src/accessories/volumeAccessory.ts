@@ -39,9 +39,8 @@ export const register = (service: Service, platform: TrioEPlatform) => {
   service
     .getCharacteristic(platform.Characteristic.On)
     .onSet(async (value: CharacteristicValue) => {
-      service.setCharacteristic(
-        platform.Characteristic.Brightness,
-        (value as boolean) ? 100 : 0,
-      );
+      if (!value as boolean) {
+        service.setCharacteristic(platform.Characteristic.Brightness, 0);
+      }
     });
 };

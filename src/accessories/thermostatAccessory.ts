@@ -5,14 +5,16 @@ import { TrioEPlatform } from '../platform';
 export const register = (service: Service, platform: TrioEPlatform) => {
   const temperatureCharacteristic = service
     .getCharacteristic(platform.Characteristic.TargetTemperature)
-    .onGet(getTemperature)
-    .onSet((temperature) => setTemperature(temperature as number));
+    .onGet(() => getTemperature())
+    .onSet((temperature) => {
+      setTemperature(temperature as number);
+    });
   temperatureCharacteristic.props.minValue = 4;
   temperatureCharacteristic.props.maxValue = 80;
 
   service
     .getCharacteristic(platform.Characteristic.CurrentTemperature)
-    .onGet(getTemperature);
+    .onGet(() => getTemperature());
 
   service
     .getCharacteristic(platform.Characteristic.TemperatureDisplayUnits)
