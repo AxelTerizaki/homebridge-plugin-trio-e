@@ -16,7 +16,7 @@ export const register = (service: Service, platform: TrioEPlatform) => {
   service
     .getCharacteristic(platform.Characteristic.Brightness)
     .onSet(async (value: CharacteristicValue) => {
-      const volume = value as number * volumeMax / 100;
+      const volume = ((value as number) * volumeMax) / 100;
 
       if (volume > 0) {
         await api.postBathtubFill(getTemperature(), volume);
@@ -39,6 +39,9 @@ export const register = (service: Service, platform: TrioEPlatform) => {
   service
     .getCharacteristic(platform.Characteristic.On)
     .onSet(async (value: CharacteristicValue) => {
-      service.setCharacteristic(platform.Characteristic.Brightness, value as boolean ? 100 : 0);
+      service.setCharacteristic(
+        platform.Characteristic.Brightness,
+        (value as boolean) ? 100 : 0,
+      );
     });
 };

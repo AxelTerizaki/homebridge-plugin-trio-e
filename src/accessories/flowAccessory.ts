@@ -15,7 +15,7 @@ export const register = (service: Service, platform: TrioEPlatform) => {
   service
     .getCharacteristic(platform.Characteristic.Brightness)
     .onSet(async (value: CharacteristicValue) => {
-      const flow = value as number / 100;
+      const flow = (value as number) / 100;
 
       if (flow > 0) {
         await api.postQuick();
@@ -39,6 +39,9 @@ export const register = (service: Service, platform: TrioEPlatform) => {
   service
     .getCharacteristic(platform.Characteristic.On)
     .onSet(async (value: CharacteristicValue) => {
-      service.setCharacteristic(platform.Characteristic.Brightness, value as boolean ? 100 : 0);
+      service.setCharacteristic(
+        platform.Characteristic.Brightness,
+        (value as boolean) ? 100 : 0,
+      );
     });
 };
