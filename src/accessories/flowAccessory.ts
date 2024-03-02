@@ -18,6 +18,7 @@ export const register = (service: Service, platform: TrioEPlatform) => {
       const flow = (value as number) / 100;
 
       if (flow > 0) {
+        console.log(`Fill by flow at ${flow}`);
         await api.postQuick();
         await api.postTlc(getTemperature(), flow, true);
         CURRENT_INTERVAL = setInterval(async () => {
@@ -28,6 +29,7 @@ export const register = (service: Service, platform: TrioEPlatform) => {
           }
         }, 1000);
       } else {
+        console.log('Stop filling by flow');
         await api.postTlc(getTemperature(), flow, false);
         if (CURRENT_INTERVAL) {
           clearInterval(CURRENT_INTERVAL);

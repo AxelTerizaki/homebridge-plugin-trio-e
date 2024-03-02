@@ -19,6 +19,7 @@ export const register = (service: Service, platform: TrioEPlatform) => {
       const volume = ((value as number) * volumeMax) / 100;
 
       if (volume > 0) {
+        console.log(`Fill by volume at ${volume}`);
         await api.postBathtubFill(getTemperature(), volume);
         CURRENT_INTERVAL = setInterval(async () => {
           const res = await api.getState();
@@ -28,6 +29,7 @@ export const register = (service: Service, platform: TrioEPlatform) => {
           }
         }, 1000);
       } else {
+        console.log('Stop filling by volume');
         await api.postTlc(getTemperature(), 0, false);
         if (CURRENT_INTERVAL) {
           clearInterval(CURRENT_INTERVAL);
