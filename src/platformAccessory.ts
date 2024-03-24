@@ -20,7 +20,7 @@ export class TrioEPlatformAccessory {
       );
 
     const popupService = this.accessory.addService(
-      new this.platform.Service.Switch('Popup'),
+      new this.platform.Service.Window('Popup'),
     );
     popupAccessory.register(popupService, this.platform);
 

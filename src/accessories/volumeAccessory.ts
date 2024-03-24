@@ -17,31 +17,36 @@ export const register = (service: Service, platform: TrioEPlatform) => {
 
   service
     .getCharacteristic(platform.Characteristic.Brightness)
-    .onGet(() => VOLUME / volumeMax * 100)
-    .onSet(debounce(async (value: CharacteristicValue) => {
-      VOLUME = ((value as number) * volumeMax) / 100;
+    .onGet(() => (VOLUME / volumeMax) * 100)
+    .onSet(
+      debounce(async (value: CharacteristicValue) => {
+        VOLUME = ((value as number) * volumeMax) / 100;
 
-      if (VOLUME > 0) {
-        console.log(`Fill by volume at ${VOLUME}`);
-        await api.postBathtubFill(getTemperature(), VOLUME);
-        removeInterval();
-        CURRENT_INTERVAL = setInterval(async () => {
-          const res = await api.getState();
-          if (res.state === 'a' && CURRENT_INTERVAL) {
-            removeInterval();
-          }
-        }, 1000);
-      } else {
-        console.log('Stop filling by volume');
-        await api.postTlc(getTemperature(), 0, false);
-        removeInterval();
-      }
-    }, 500));
+        if (VOLUME > 0) {
+          console.log(`Fill by volume at ${VOLUME}`);
+          await api.postBathtubFill(getTemperature(), VOLUME);
+          removeInterval();
+          CURRENT_INTERVAL = setInterval(async () => {
+            const res = await api.getState();
+            if (res.state === 'a' && CURRENT_INTERVAL) {
+              removeInterval();
+            }
+          }, 1000);
+        } else {
+          console.log('Stop filling by volume');
+          await api.postTlc(getTemperature(), 0, false);
+          removeInterval();
+        }
+      }, 500),
+    );
 
   service
     .getCharacteristic(platform.Characteristic.On)
     .onSet(async (value: CharacteristicValue) => {
-      service.setCharacteristic(platform.Characteristic.Brightness, value as boolean ? 100 : 0);
+      service.setCharacteristic(
+        platform.Characteristic.Brightness,
+        (value as boolean) ? 100 : 0,
+      );
     });
 };
 
