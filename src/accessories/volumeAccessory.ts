@@ -30,6 +30,7 @@ export const register = (service: Service, platform: TrioEPlatform) => {
             const res = await api.getState();
             if (res.state === 'a' && CURRENT_INTERVAL) {
               removeInterval();
+              service.setCharacteristic(platform.Characteristic.Brightness, 0);
             }
           }, 1000);
         } else {
