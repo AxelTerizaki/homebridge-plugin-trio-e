@@ -1,4 +1,5 @@
 import * as flowAccessory from './accessories/flowAccessory';
+import * as leakAccessory from './accessories/leakAccessory';
 import * as popupAccessory from './accessories/popupAccessory';
 import * as thermostatAccessory from './accessories/thermostatAccessory';
 import * as volumeAccessory from './accessories/volumeAccessory';
@@ -38,5 +39,10 @@ export class TrioEPlatformAccessory {
       new this.platform.Service.Lightbulb('Fill by volume', 'volume'),
     );
     volumeAccessory.register(volumeService, this.platform);
+
+    const leakService = this.accessory.addService(
+      new this.platform.Service.ContactSensor('Faucet'),
+    );
+    leakAccessory.register(leakService, this.platform);
   }
 }
